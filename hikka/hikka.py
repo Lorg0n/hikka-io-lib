@@ -117,9 +117,47 @@ class Anime:
         self.updated = data.get("updated", 0)
 
 
+class User:
+    def __init__(self, data):
+        self.reference = data.get("reference", "")
+        self.updated = data.get("updated", 0)
+        self.description = data.get("description", "")
+        self.username = data.get("username", "")
+        self.created = data.get("created", 0)
+        self.cover = data.get("cover", "")
+        self.active = data.get("active", False)
+        self.avatar = data.get("avatar", "")
+        self.role = data.get("role", "")
+
+    def __str__(self):
+        return f"<User: {self.username} ({self.role})>"
+
+
+class WatchHistoryItem:
+    def __init__(self, data):
+        self.content = data.get("content", {})
+        self.history_type = data.get("history_type", "")
+        self.created = data.get("created", 0)
+        self.updated = data.get("updated", 0)
+        self.reference = data.get("reference", "")
+        self.data = data.get("data", {})
+
+    def __str__(self):
+        return f"<Watch History Item: {self.reference}>"
+
+
+class ActionData:
+    def __init__(self, timestamp, actions):
+        self.timestamp = timestamp
+        self.actions = actions
+
+    def __str__(self):
+        return f"<ActionData(timestamp={self.timestamp}, actions={self.actions})>"
+
+
 class Hikka:
-    def __init__(self):
-        pass
+    def __init__(self, auth=None):
+        self.auth = auth
 
     @property
     def genres(self):
@@ -130,6 +168,32 @@ class Hikka:
             result.append(genre)
         return result
 
+    def find_users(self, query):
+        result_json = _post_json_from_url(f"{HIKKA_URL_BASE}/user/list", json={
+            "query": query
+        })
+        return [User(users_data) for users_data in result_json]
+
+    def get_user_activity(self, username):
+        result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/user/{username}/activity")
+        return [ActionData(item["timestamp"], item["actions"]) for item in result_json]
+
+    def get_user_history(self, username, page=1, size=15):
+        result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/user/{username}/history?page={page}&size={size}")
+        return [WatchHistoryItem(item) for item in result_json["list"]]
+
+    def get_user(self, username):
+        result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/user/{username}")
+        return User(result_json)
+
+    def me(self):
+        if self.auth is None:
+            return None
+
+        result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/user/me", headers={
+            "auth": self.auth
+        })
+        return User(result_json)
 
     def get_voices_by_character(self, slug, page=1, size=15):
         result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/characters/{slug}/voices?page={page}&size={size}")
@@ -139,9 +203,9 @@ class Hikka:
         result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/characters/{slug}/anime?page={page}&size={size}")
         return [Anime(anime_data["anime"]) for anime_data in result_json["list"]]
 
-    def find_characters(self, string, page=1, size=15):
+    def find_characters(self, query, page=1, size=15):
         result_json = _post_json_from_url(f"{HIKKA_URL_BASE}/characters?page={page}&size={size}", json={
-            "query": string
+            "query": query
         })
         return [Character.from_finder_dict(character_data) for character_data in result_json["list"]]
 
@@ -174,9 +238,12 @@ def _post_json_from_url(url, json):
     return result_json
 
 
-def _get_json_from_url(url):
+def _get_json_from_url(url, headers=None):
     try:
-        r = requests.get(url)
+        if headers is None:
+            r = requests.get(url)
+        else:
+            r = requests.get(url, headers=headers)
         r.raise_for_status()
         result_json = r.json()
     except requests.RequestException as e:
