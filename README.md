@@ -10,6 +10,20 @@ You can install **hikka-io-lib** using git and terminal:
 pip install git+https://github.com/Lorg0n/hikka-io-lib/
 ```
 
+## Authorisation
+How to get auth code to use methods associated with your profile
+1. Copy the value of the `Auth` header from F12 menu.
+![img.png](img/img.png)
+2. Put this in the arguments, during the initialisation of the Hikka class object. Example:
+```python
+from hikka import Hikka
+
+api = Hikka("YGH*******************IRc")
+print(f'My username: {api.me().username}')
+
+# My username: Lorg0n
+```
+
 ## Usage
 
 Here's how you can use **hikka-io-lib** in your Python code:
