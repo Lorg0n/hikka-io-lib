@@ -1,45 +1,51 @@
-# MyLibrary
+![Powered by Hikka](https://rosset-nocpes.github.io/ua-badges/src/powered-by-hikka.svg)
 
-MyLibrary is a Python library for performing various tasks.
-
+# hikka-io-lib
+The library allows you to interact with the API from hikka.io in a more understandable way
 ## Installation
 
-You can install MyLibrary using pip:
+You can install **hikka-io-lib** using git and terminal:
 
 ```bash
-pip install mylibrary
+pip install git+https://github.com/Lorg0n/hikka-io-lib/
 ```
 
 ## Usage
 
-Here's how you can use MyLibrary in your Python code:
+Here's how you can use **hikka-io-lib** in your Python code:
 
 ```python
-import mylibrary
+from hikka import Hikka
 
-# Example usage
-result = mylibrary.add(3, 4)
-print(result)  # Output: 7
+api = Hikka()
+for character in api.find_characters("naruto"):
+    character_slug = character.slug
+    for anime in api.get_anime_by_character(character_slug):
+        print(f"{character.name_ja}: in anime \"{anime.title_ja}\"")
+        
+# うずまき ナルト: in anime "Road of Naruto"
+# うずまき ナルト: in anime "Naruto: Shippuuden"
+# うずまき ナルト: in anime "Naruto"
+# うずまき ナルト: in anime "The Last: Naruto the Movie"
+# うずまき ナルト: in anime "Naruto: Shippuuden Movie 6 - Road to Ninja"
+# うずまき ナルト: in anime "Naruto: Shippuuden - Sunny Side Battle"
+# ...
 ```
 
-## Features
+## TODO
 
-- Feature 1: Perform addition
-- Feature 2: Perform subtraction
-- Feature 3: Perform multiplication
-- Feature 4: Perform division
+- [ ] Add some sort of authorisation
+    - [ ] Add methods that require authorisation
+- [ ] Implement all remaining methods
 
 ## Documentation
 
-You can find the full documentation for MyLibrary [here](https://mylibrary-docs.com).
+The official documentation can be found at [api.hikka.io](https://api.hikka.io/docs#)
 
 ## Contributing
 
-If you'd like to contribute to MyLibrary, please fork the repository and create a pull request. You can also open an issue if you find any bugs or have any feature requests.
+If you'd like to contribute to this library, please fork the repository and create a pull request. You can also open an issue if you find any bugs or have any feature requests.
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
-
-Feel free to customize it to fit your specific library's features and documentation.
