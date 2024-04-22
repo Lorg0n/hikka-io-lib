@@ -1,4 +1,5 @@
 import json
+from functools import singledispatchmethod
 
 import requests
 
@@ -20,14 +21,29 @@ class Company:
 
 
 class Character:
+    @singledispatchmethod
     def __init__(self, data):
-        self.main = data.get("main", False)
+        # self.main = data.get("main", False)
         self.name_ua = data["character"].get("name_ua", "")
         self.name_en = data["character"].get("name_en", "")
         self.name_ja = data["character"].get("name_ja", "")
         self.image = data["character"].get("image", "")
         self.slug = data["character"].get("slug", "")
         self.synonyms = data["character"].get("synonyms", [])
+
+    @classmethod
+    def from_finder_dict(cls, data):
+        data = {
+            "character": {
+                "name_ua": data.get("name_ua", ""),
+                "name_en": data.get("name_en", ""),
+                "name_ja": data.get("name_ja", ""),
+                "image": data.get("image", ""),
+                "slug": data.get("slug", ""),
+                "synonyms": data.get("name_", []),
+            }
+        }
+        return cls(data)
 
 
 class Person:
@@ -51,6 +67,17 @@ class Role:
         self.weight = data.get("weight", 0)
         self.slug = data.get("slug", "")
 
+
+class Episode:
+    def __init__(self, data):
+        self.aired = data.get("aired", 0)
+        self.title_ua = data.get("title_ua", "")
+        self.title_en = data.get("title_en", "")
+        self.title_ja = data.get("title_ja", "")
+        self.index = data.get("index", 0)
+
+    def __str__(self):
+        return f"<Episode: {self.title_en} ({self.title_ja}) - Episode {self.index}>"
 
 
 class Anime:
@@ -103,6 +130,25 @@ class Hikka:
             result.append(genre)
         return result
 
+
+    def get_voices_by_character(self, slug, page=1, size=15):
+        result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/characters/{slug}/voices?page={page}&size={size}")
+        return [Person(person_data) for person_data in result_json["list"]]
+
+    def get_anime_by_character(self, slug, page=1, size=15):
+        result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/characters/{slug}/anime?page={page}&size={size}")
+        return [Anime(anime_data["anime"]) for anime_data in result_json["list"]]
+
+    def find_characters(self, string, page=1, size=15):
+        result_json = _post_json_from_url(f"{HIKKA_URL_BASE}/characters?page={page}&size={size}", json={
+            "query": string
+        })
+        return [Character.from_finder_dict(character_data) for character_data in result_json["list"]]
+
+    def get_episodes(self, slug, page=1, size=15):
+        result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/anime/{slug}/episodes?page={page}&size={size}")
+        return [Episode(episode_data) for episode_data in result_json["list"]]
+
     def get_stuff(self, slug, page=1, size=15):
         result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/anime/{slug}/staff?page={page}&size={size}")
         return [Person(person_data) for person_data in result_json["list"]]
@@ -115,6 +161,17 @@ class Hikka:
         result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/anime/{slug}")
         # print(json.dumps(result_json, indent=4, ensure_ascii=False))
         return Anime(result_json)
+
+
+def _post_json_from_url(url, json):
+    try:
+        r = requests.post(url, json=json)
+        r.raise_for_status()
+        result_json = r.json()
+    except requests.RequestException as e:
+        raise f"Error executing the request: {e}"
+
+    return result_json
 
 
 def _get_json_from_url(url):

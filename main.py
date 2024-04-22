@@ -2,8 +2,7 @@ from hikka import Hikka
 
 
 h = Hikka()
-for i in h.get_stuff("fullmetal-alchemist-brotherhood-fc524a"):
-    print("\n", i.name_native, i.name_en)
-    print(i.roles)
+for i in h.get_voices_by_character("alphonse-elric-e3622e"):
+    print(i)
 
 # print(len(h.genres.list))
