@@ -1,4 +1,4 @@
-![Powered by Hikka](https://rosset-nocpes.github.io/ua-badges/src/powered-by-hikka.svg)
+[<img src="https://rosset-nocpes.github.io/ua-badges/src/powered-by-hikka.svg">](https://hikka.io/)
 
 # hikka-io-lib
 The library allows you to interact with the API from hikka.io in a more understandable way
