@@ -45,7 +45,3 @@ The official documentation can be found at [api.hikka.io](https://api.hikka.io/d
 ## Contributing
 
 If you'd like to contribute to this library, please fork the repository and create a pull request. You can also open an issue if you find any bugs or have any feature requests.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
