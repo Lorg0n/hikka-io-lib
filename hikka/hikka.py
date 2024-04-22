@@ -168,6 +168,7 @@ class Hikka:
             result.append(genre)
         return result
 
+
     def find_users(self, query):
         result_json = _post_json_from_url(f"{HIKKA_URL_BASE}/user/list", json={
             "query": query
