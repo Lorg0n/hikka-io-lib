@@ -1,26 +1,93 @@
+import json
+
 import requests
 
 HIKKA_URL_BASE = "https://api.hikka.io"
 
 
 class Genre:
-    def __init__(self, name_ua, name_en, slug, type):
-        self.name_ua = name_ua
-        self.name_en = name_en
-        self.slug = slug
-        self.type = type
+    def __init__(self, data):
+        self.name_ua = data.get("name_ua", "")
+        self.name_en = data.get("name_en", "")
+        self.slug = data.get("slug", "")
+        self.type = data.get("type", "")
 
 
-class GenreList:
-    def __init__(self):
-        self.__list = []
+class Company:
+    def __init__(self, data):
+        self.company = data.get("company", {})
+        self.type = data.get("type", "")
 
-    def add(self, item: Genre):
-        self.__list.append(item)
 
-    @property
-    def list(self):
-        return self.__list
+class Character:
+    def __init__(self, data):
+        self.main = data.get("main", False)
+        self.name_ua = data["character"].get("name_ua", "")
+        self.name_en = data["character"].get("name_en", "")
+        self.name_ja = data["character"].get("name_ja", "")
+        self.image = data["character"].get("image", "")
+        self.slug = data["character"].get("slug", "")
+        self.synonyms = data["character"].get("synonyms", [])
+
+
+class Person:
+    def __init__(self, data):
+        self.name_native = data["person"].get("name_native", "")
+        self.name_ua = data["person"].get("name_ua", "")
+        self.name_en = data["person"].get("name_en", "")
+        self.image = data["person"].get("image", "")
+        self.slug = data["person"].get("slug", "")
+        self.synonyms = data["person"].get("synonyms", [])
+        self.roles = [Role(role_data) for role_data in data.get("roles", [])]
+
+    def __str__(self):
+        return f"<Person:{self.name_en} ({self.name_ua})>"
+
+
+class Role:
+    def __init__(self, data):
+        self.name_ua = data.get("name_ua", "")
+        self.name_en = data.get("name_en", "")
+        self.weight = data.get("weight", 0)
+        self.slug = data.get("slug", "")
+
+
+
+class Anime:
+    def __init__(self, data):
+        self.companies = [Company(company_data) for company_data in data.get("companies", [])]
+        self.genres = [Genre(genre_data) for genre_data in data.get("genres", [])]
+        self.comments_count = data.get("comments_count", 0)
+        self.start_date = data.get("start_date", 0)
+        self.end_date = data.get("end_date", 0)
+        self.episodes_released = data.get("episodes_released", 0)
+        self.episodes_total = data.get("episodes_total", 0)
+        self.synopsis_en = data.get("synopsis_en", "")
+        self.synopsis_ua = data.get("synopsis_ua", "")
+        self.media_type = data.get("media_type", "")
+        self.title_ua = data.get("title_ua", "")
+        self.title_en = data.get("title_en", "")
+        self.title_ja = data.get("title_ja", "")
+        self.duration = data.get("duration", 0)
+        self.poster = data.get("poster", "")
+        self.status = data.get("status", "")
+        self.source = data.get("source", "")
+        self.rating = data.get("rating", "")
+        self.has_franchise = data.get("has_franchise", False)
+        self.scored_by = data.get("scored_by", 0)
+        self.score = data.get("score", 0.0)
+        self.nsfw = data.get("nsfw", False)
+        self.slug = data.get("slug", "")
+        self.season = data.get("season", "")
+        self.year = data.get("year", 0)
+        self.synonyms = data.get("synonyms", [])
+        self.external = data.get("external", [])
+        self.videos = data.get("videos", [])
+        self.ost = data.get("ost", [])
+        self.stats = data.get("stats", {})
+        self.schedule = data.get("schedule", [])
+        self.translated_ua = data.get("translated_ua", False)
+        self.updated = data.get("updated", 0)
 
 
 class Hikka:
@@ -29,19 +96,25 @@ class Hikka:
 
     @property
     def genres(self):
-        genre_list = GenreList()
         result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/anime/genres")
-
+        result = []
         for i in result_json["list"]:
-            genre = Genre(i["name_ua"], i["name_en"], i["slug"], i["type"])
-            genre_list.add(genre)
+            genre = Genre(i)
+            result.append(genre)
+        return result
 
-        return genre_list
+    def get_stuff(self, slug, page=1, size=15):
+        result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/anime/{slug}/staff?page={page}&size={size}")
+        return [Person(person_data) for person_data in result_json["list"]]
+
+    def get_characters(self, slug, page=1, size=15):
+        result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/anime/{slug}/characters?page={page}&size={size}")
+        return [Character(character_data) for character_data in result_json["list"]]
 
     def get_anime_info(self, slug):
         result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/anime/{slug}")
-        print(f"{HIKKA_URL_BASE}/anime/{slug}")
-        print(result_json)
+        # print(json.dumps(result_json, indent=4, ensure_ascii=False))
+        return Anime(result_json)
 
 
 def _get_json_from_url(url):
