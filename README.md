@@ -48,8 +48,8 @@ for character in api.find_characters("naruto"):
 
 ## TODO
 
-- [ ] Add authorisation
-    - [ ] Add methods that require authorisation
+- [X] Add authorisation
+    - [X] Add methods that require authorisation
 - [ ] Implement all remaining methods
 - [ ] Add comments for each method
 
