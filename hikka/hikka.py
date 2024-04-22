@@ -155,6 +155,36 @@ class ActionData:
         return f"<ActionData(timestamp={self.timestamp}, actions={self.actions})>"
 
 
+class AnimeRecord:
+    def __init__(self, data):
+        self.reference = data.get('reference')
+        self.note = data.get('note')
+        self.updated = data.get('updated')
+        self.created = data.get('created')
+        self.status = data.get('status')
+        self.rewatches = data.get('rewatches')
+        self.duration = data.get('duration')
+        self.episodes = data.get('episodes')
+        self.score = data.get('score')
+        anime_data = data.get('anime', {})
+        self.media_type = anime_data.get('media_type')
+        self.title_ua = anime_data.get('title_ua')
+        self.title_en = anime_data.get('title_en')
+        self.title_ja = anime_data.get('title_ja')
+        self.episodes_released = anime_data.get('episodes_released')
+        self.episodes_total = anime_data.get('episodes_total')
+        self.poster = anime_data.get('poster')
+        self.anime_status = anime_data.get('status')
+        self.scored_by = anime_data.get('scored_by')
+        self.anime_score = anime_data.get('score')
+        self.slug = anime_data.get('slug')
+        self.translated_ua = anime_data.get('translated_ua')
+        self.season = anime_data.get('season')
+        self.source = anime_data.get('source')
+        self.rating = anime_data.get('rating')
+        self.year = anime_data.get('year')
+
+
 class Hikka:
     def __init__(self, auth=None):
         self.auth = auth
@@ -168,6 +198,9 @@ class Hikka:
             result.append(genre)
         return result
 
+    def get_user_watch_list(self, username, page=1, size=15):
+        result_json = _post_json_from_url(f"{HIKKA_URL_BASE}/watch/{username}/list?page={page}&size={size}", json={})
+        return [AnimeRecord(record_data) for record_data in result_json["list"]]
 
     def find_users(self, query):
         result_json = _post_json_from_url(f"{HIKKA_URL_BASE}/user/list", json={
@@ -225,6 +258,7 @@ class Hikka:
     def get_anime_info(self, slug):
         result_json = _get_json_from_url(f"{HIKKA_URL_BASE}/anime/{slug}")
         # print(json.dumps(result_json, indent=4, ensure_ascii=False))
+        print(result_json)
         return Anime(result_json)
 
 
