@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="hikka",
-    version="0.0.1",
+    version="0.0.2",
     author="Lorg0n",
     author_email="lorgon.kv@gmail.com",
     description="The library helps to interact with the open API from hikka.io",
