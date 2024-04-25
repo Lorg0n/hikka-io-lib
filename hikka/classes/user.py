@@ -75,8 +75,8 @@ class User:
         return [ActionData(item["timestamp"], item["actions"]) for item in result_json]
 
     def search_users(self, query):
-        result_json = request(f"{HIKKA_URL_BASE}/user/list", json={
+        result_json = request(f"{HIKKA_URL_BASE}/user/list", "POST", json={
             "query": query
         })
-        return [User(users_data) for users_data in result_json]
+        return [UserResponse(users_data) for users_data in result_json]
 
