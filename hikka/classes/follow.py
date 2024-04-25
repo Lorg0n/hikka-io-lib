@@ -17,22 +17,22 @@ class Follow:
         except:
             return False
 
-    def follow_user(self, username):
-        if not self.hikka.is_authenticated:
-            raise ValueError("Hikka must be authenticated")
-
-    def unfollow_user(self, username):
-        if not self.hikka.is_authenticated:
-            raise ValueError("Hikka must be authenticated")
-
-    def get_follow_stats(self, username):
-        if not self.hikka.is_authenticated:
-            raise ValueError("Hikka must be authenticated")
-
-    def get_followed_users(self, username):
-        if not self.hikka.is_authenticated:
-            raise ValueError("Hikka must be authenticated")
-
-    def get_followers(self, username):
-        if not self.hikka.is_authenticated:
-            raise ValueError("Hikka must be authenticated")
+    # def follow_user(self, username):
+    #     if not self.hikka.is_authenticated:
+    #         raise ValueError("Hikka must be authenticated")
+    #
+    # def unfollow_user(self, username):
+    #     if not self.hikka.is_authenticated:
+    #         raise ValueError("Hikka must be authenticated")
+    #
+    # def get_follow_stats(self, username):
+    #     if not self.hikka.is_authenticated:
+    #         raise ValueError("Hikka must be authenticated")
+    #
+    # def get_followed_users(self, username):
+    #     if not self.hikka.is_authenticated:
+    #         raise ValueError("Hikka must be authenticated")
+    #
+    # def get_followers(self, username):
+    #     if not self.hikka.is_authenticated:
+    #         raise ValueError("Hikka must be authenticated")

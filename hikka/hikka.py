@@ -285,7 +285,7 @@
 #         raise f"Error executing the request: {e}"
 #
 #     return result_json
-from hikka.classes import user
+from hikka.classes import user, watch, follow
 from hikka.utils import *
 
 
@@ -311,3 +311,11 @@ class Hikka:
     @property
     def user(self):
         return user.User(self)
+
+    @property
+    def watch(self):
+        return watch.Watch(self)
+
+    @property
+    def follow(self):
+        return follow.Follow(self)
